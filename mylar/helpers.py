@@ -3230,6 +3230,7 @@ def weekly_info(week=None, year=None, current=None):
                 'startweek':          con_startweek,
                 'midweek':            midweek.strftime('%Y-%m-%d'),
                 'endweek':            con_endweek,
+                'month':              midweek.strftime('%m'),
                 'year':               year,
                 'prev_weeknumber':    prev_week,
                 'prev_year':          prev_year,
@@ -3239,13 +3240,28 @@ def weekly_info(week=None, year=None, current=None):
                 'last_update':        weekly_last}
 
     if weekdst is not None:
-        if mylar.CONFIG.WEEKFOLDER_FORMAT == 0:
-            weekn = weeknumber
-            if len(str(weekn)) == 1:
-                weekn = '%s%s' % ('0', str(weekn))
-            weekfold = os.path.join(weekdst, '%s-%s' % (weekinfo['year'], weekn))
+        logger.fdebug(f'mylar.CONFIG.WEEKFOLDER_FORMAT = {mylar.CONFIG.WEEKFOLDER_FORMAT}')
+        if type(mylar.CONFIG.WEEKFOLDER_FORMAT) is str:
+            folder = mylar.CONFIG.WEEKFOLDER_FORMAT
+            matches = re.findall(r"(\$\w+)", folder)
+            for match in matches:
+                var = match[1:].lower()
+                replacement = match
+                if var in weekinfo.keys():
+                    if var.find('weeknumber') >= 0:
+                        replacement = '%02d' % int(weekinfo[var])
+                    else:
+                        replacement = str(weekinfo[var])
+                logger.fdebug(f'replacing {match} with {replacement}')
+                pat = re.escape(match) # + '\b'
+                folder = re.sub(pat, replacement, folder)
+
+            weekfold = os.path.join(weekdst, folder)
+        elif mylar.CONFIG.WEEKFOLDER_FORMAT == 0:
+            weekfold = os.path.join(weekdst, '%s-%02d' % (weekinfo['year'], int(weekinfo['weeknumber'])))
         else:
             weekfold = os.path.join(weekdst, str( str(weekinfo['midweek']) ))
+        logger.info('week_folder = %s' % str(weekfold))
     else:
         weekfold = None
 

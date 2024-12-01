@@ -123,7 +123,7 @@ _CONFIG_DEFINITIONS = OrderedDict({
     'PULL_REFRESH': (str, 'Weekly', None),
     'WEEKFOLDER': (bool, 'Weekly', False),
     'WEEKFOLDER_LOC': (str, 'Weekly', None),
-    'WEEKFOLDER_FORMAT': (int, 'Weekly', 0),
+    'WEEKFOLDER_FORMAT': (str, 'Weekly', '$Year-$WeekNumber'),
     'INDIE_PUB': (int, 'Weekly', 75),
     'BIGGIE_PUB': (int, 'Weekly', 55),
     'PACK_0DAY_WATCHLIST_ONLY': (bool, 'Weekly', True),
