@@ -3089,6 +3089,20 @@ def torrentinfo(issueid=None, torrent_hash=None, download=False, monitor=False):
     #torrent_info['snatch_status'] = snatch_status
     return torrent_info
 
+def replace_from_dict(text=None, source=None):
+    if source is None or len(source) == 0:
+        return text
+
+    matches = re.findall(r"(\$\w+)", text)
+    for match in matches:
+        key = match[1:].lower()
+        replacement = str(source[key]) if key in source else match
+        logger.fdebug(f'replacing {match} with {replacement}')
+        pat = re.escape(match) # + '\b'
+        text = re.sub(pat, replacement, text)
+
+    return text
+
 def weekly_info(week=None, year=None, current=None):
     #find the current week and save it as a reference point.
     todaydate = datetime.datetime.today()
@@ -3215,11 +3229,6 @@ def weekly_info(week=None, year=None, current=None):
         con_startweek = "" + startweek.strftime(date_fmt)
         con_endweek = "" + endweek.strftime(date_fmt)
 
-    if mylar.CONFIG.WEEKFOLDER_LOC is not None:
-        weekdst = mylar.CONFIG.WEEKFOLDER_LOC
-    else:
-        weekdst = mylar.CONFIG.DESTINATION_DIR
-
     if mylar.SCHED_WEEKLY_LAST is not None:
         weekly_stamp = datetime.datetime.fromtimestamp(mylar.SCHED_WEEKLY_LAST)
         weekly_last = weekly_stamp.replace(microsecond=0)
@@ -3239,23 +3248,15 @@ def weekly_info(week=None, year=None, current=None):
                 'current_weeknumber': current_weeknumber,
                 'last_update':        weekly_last}
 
+    if mylar.CONFIG.WEEKFOLDER_LOC is not None:
+        weekdst = mylar.CONFIG.WEEKFOLDER_LOC
+    else:
+        weekdst = mylar.CONFIG.DESTINATION_DIR
+
     if weekdst is not None:
         logger.fdebug(f'mylar.CONFIG.WEEKFOLDER_FORMAT = {mylar.CONFIG.WEEKFOLDER_FORMAT}')
         if type(mylar.CONFIG.WEEKFOLDER_FORMAT) is str:
-            folder = mylar.CONFIG.WEEKFOLDER_FORMAT
-            matches = re.findall(r"(\$\w+)", folder)
-            for match in matches:
-                var = match[1:].lower()
-                replacement = match
-                if var in weekinfo.keys():
-                    if var.find('weeknumber') >= 0:
-                        replacement = '%02d' % int(weekinfo[var])
-                    else:
-                        replacement = str(weekinfo[var])
-                logger.fdebug(f'replacing {match} with {replacement}')
-                pat = re.escape(match) # + '\b'
-                folder = re.sub(pat, replacement, folder)
-
+            folder = replace_from_dict(mylar.CONFIG.WEEKFOLDER_FORMAT, weekinfo)
             weekfold = os.path.join(weekdst, folder)
         elif mylar.CONFIG.WEEKFOLDER_FORMAT == 0:
             weekfold = os.path.join(weekdst, '%s-%02d' % (weekinfo['year'], int(weekinfo['weeknumber'])))
