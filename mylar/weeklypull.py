@@ -1574,7 +1574,9 @@ def weekly_singlecopy(comicid, issuenum, file, path, weekinfo):
             desdir = mylar.CONFIG.DESTINATION_DIR
 
     else:
-        desdir = mylar.CONFIG.GRABBAG_DIR
+        series = helpers.series_info(comicid)
+        grabbag_dir = helpers.grabbag_dir({'publisher': series['ComicPublisher']})
+        desdir = grabbag_dir
 
     desfile = os.path.join(desdir, file)
     srcfile = os.path.join(path)

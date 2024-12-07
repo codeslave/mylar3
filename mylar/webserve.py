@@ -4749,7 +4749,8 @@ class WebInterface(object):
 
         except:
             cvarcid = None
-            sdir = mylar.CONFIG.GRABBAG_DIR
+            grabbag_dir = helpers.grabbag_dir({'publisher': arcinfo[0]['Publisher'])
+            sdir = grabbag_dir
 
         if len(issref) > 0:
             helpers.updatearc_locs(StoryArcID, issref)
@@ -5958,6 +5959,7 @@ class WebInterface(object):
         # into a 'weekly' pull folder for those wanting to transfer directly to a 3rd party device.
         myDB = db.DBConnection()
 
+        # TODO this needs to be updated to support custom weekfolders
         if mylar.CONFIG.WEEKFOLDER:
             if mylar.CONFIG.WEEKFOLDER_LOC:
                 dstdir = mylar.CONFIG.WEEKFOLDER_LOC

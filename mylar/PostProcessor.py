@@ -2368,11 +2368,14 @@ class PostProcessor(object):
                         logger.info('%s One-off STORYARC mode enabled for Post-Processing for %s' % (module, sarc))
                     else:
                         self._log("One-off mode enabled for Post-Processing. All I'm doing is moving the file untouched into the Grab-bag directory.")
+                        grdst = ''
                         if mylar.CONFIG.GRABBAG_DIR is None:
                             mylar.CONFIG.GRABBAG_DIR = os.path.join(mylar.CONFIG.DESTINATION_DIR, 'Grabbag')
-                        logger.info('%s One-off mode enabled for Post-Processing. Will move into Grab-bag directory: %s' % (module, mylar.CONFIG.GRABBAG_DIR))
-                        self._log("Grab-Bag Directory set to : %s" % mylar.CONFIG.GRABBAG_DIR)
-                        grdst = mylar.CONFIG.GRABBAG_DIR
+                            grdst = mylar.CONFIG.GRABBAG_DIR
+                        else:
+                            grdst = os.path.join(mylar.CONFIG.DESTINATION_DIR, helpers.grabbag_dir({'publisher': publisher})
+                        logger.info('%s One-off mode enabled for Post-Processing. Will move into Grab-bag directory: %s' % (module, grdst))
+                        self._log("Grab-Bag Directory set to : %s" % grdst)
 
                     odir = location
 

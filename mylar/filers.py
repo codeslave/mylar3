@@ -458,8 +458,9 @@ class FileHandlers(object):
                         storyarcd = os.path.join(mylar.CONFIG.STORYARC_LOCATION, arcdir)
                     logger.fdebug('Story Arc Directory set to : ' + storyarcd)
                 else:
-                    logger.fdebug('Story Arc Directory set to : ' + mylar.CONFIG.GRABBAG_DIR)
-                    storyarcd = os.path.join(mylar.CONFIG.DESTINATION_DIR, mylar.CONFIG.GRABBAG_DIR)
+                    grabbag_dir = helpers.grabbag_dir({'publisher': publisher})
+                    logger.fdebug('Story Arc Directory set to : ' + grabbag_dir)
+                    storyarcd = os.path.join(mylar.CONFIG.DESTINATION_DIR, grabbag_dir)
 
                 comlocation = storyarcd
                 comversion = None   #need to populate this.

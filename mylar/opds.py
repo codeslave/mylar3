@@ -207,7 +207,7 @@ class OPDS(object):
                     'rel': 'subsection',
                 }
             )
-        gbd = mylar.CONFIG.GRABBAG_DIR + '/*'
+        gbd = helpers.grabbag_dir({'publisher': '*'}) + '/*'
         oneofflist = glob.glob(gbd)
         if len(oneofflist) > 0:
             entries.append(
@@ -688,7 +688,7 @@ class OPDS(object):
         entries = []
         flist = []
         book = ''
-        gbd = str(mylar.CONFIG.GRABBAG_DIR + '/*')
+        gbd = helpers.grabbag_dir({'publisher': '*'}) + '/*')
         flist = glob.glob(gbd)
         readlist = []
         for book in flist:

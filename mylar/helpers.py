@@ -376,8 +376,9 @@ def rename_param(comicid, comicname, issue, ofilename, comicyear=None, issueid=N
                         storyarcd = os.path.join(mylar.CONFIG.STORYARC_LOCATION, arcdir)
                     logger.fdebug('Story Arc Directory set to : ' + storyarcd)
                 else:
-                    logger.fdebug('Story Arc Directory set to : ' + mylar.CONFIG.GRABBAG_DIR)
-                    storyarcd = os.path.join(mylar.CONFIG.DESTINATION_DIR, mylar.CONFIG.GRABBAG_DIR)
+                    grabbag_dir = grabbag_dir({'publisher': publisher})
+                    logger.fdebug('Story Arc Directory set to : ' + grabbag_dir)
+                    storyarcd = os.path.join(mylar.CONFIG.DESTINATION_DIR, grabbag_dir)
 
                 comlocation = storyarcd
                 comversion = None   #need to populate this.
@@ -2922,8 +2923,9 @@ def arcformat(arc, spanyears, publisher):
         else:
             dstloc = os.path.join(mylar.CONFIG.STORYARC_LOCATION, arcpath)
     elif mylar.CONFIG.COPY2ARCDIR is True:
-        logger.warn('Story arc directory is not configured. Defaulting to grabbag directory: ' + mylar.CONFIG.GRABBAG_DIR)
-        dstloc = os.path.join(mylar.CONFIG.GRABBAG_DIR, arcpath)
+        grabbag_dir = grabbag_dir({'publisher': publisher})
+        logger.warn('Story arc directory is not configured. Defaulting to grabbag directory: ' + grabbag_dir)
+        dstloc = os.path.join(grabbag_dir, arcpath)
     else:
         dstloc = None
 
@@ -3090,6 +3092,7 @@ def torrentinfo(issueid=None, torrent_hash=None, download=False, monitor=False):
     return torrent_info
 
 def replace_from_dict(text=None, source=None):
+    logger.fdebug(f'replacing elements in {text}')
     if source is None or len(source) == 0:
         return text
 
@@ -3269,6 +3272,17 @@ def weekly_info(week=None, year=None, current=None):
     weekinfo['week_folder'] = weekfold
 
     return weekinfo
+
+def grabbag_dir(dict:source = {}):
+    grabbag_dir = replace_from_dict(mylar.CONFIG.GRABBAG_DIR, source)
+    logger.fdebug(f'using {grabbag_dir} as grabbag_dir')
+    return grabbag_dir
+
+def series_info(ComicId):
+    #import db
+    myDB = db.DBConnection()
+    series = myDB.selectone("SELECT * FROM comics WHERE ComicID=?", [ComicID]).fetchone()
+    return series
 
 def latestdate_update():
     #import db
